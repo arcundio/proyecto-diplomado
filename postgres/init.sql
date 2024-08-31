@@ -2,14 +2,15 @@
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     email VARCHAR(255) UNIQUE NOT NULL,
-    passwrd VARCHAR(255) NOT NULL, -- Corregido el nombre de la columna
+    passwrd VARCHAR(255) NOT NULL, 
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE public_keys (
     id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users(id) ON DELETE CASCADE,
+    user_id INT REFERENCES users(id) ON DELETE CASCADE UNIQUE,
     public_key TEXT NOT NULL,
+    key_name VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -27,7 +28,7 @@ CREATE TABLE files (
 CREATE TABLE signatures (
     id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users(id) ON DELETE CASCADE,
-    file_id INT REFERENCES files(id) ON DELETE CASCADE,
+    file_id INT REFERENCES files(id) ON DELETE CASCADE UNIQUE,
     file_signature TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

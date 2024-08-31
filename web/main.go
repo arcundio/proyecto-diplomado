@@ -22,6 +22,8 @@ func main() {
     r.HandleFunc("/upload", controllers.UploadFileHandler).Methods("POST")
     r.HandleFunc("/sign", controllers.SignFileHandler).Methods("POST")
     r.HandleFunc("/generateKeys", controllers.GenerateKeyPairHandler).Methods("POST")
+    r.HandleFunc("/files/{id}", controllers.GetFilesByUserID).Methods("GET")
+    r.HandleFunc("/verify", controllers.VerifySignature).Methods("POST")
 
     // Rutas protegidas
     protected := r.PathPrefix("/").Subrouter()

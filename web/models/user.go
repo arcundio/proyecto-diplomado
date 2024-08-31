@@ -6,13 +6,14 @@ import (
 
 type File struct {
     ID        uint      `gorm:"primaryKey"`
-    UserID    uint      `gorm:"not null"`
+    UserID    int      `gorm:"not null"`
     FileName  string    `gorm:"type:varchar(255);not null"`
     FileData  []byte    `gorm:"type:bytea;not null"`
     FileHash  string    `gorm:"type:text;not null"`
     HashAlg   string    `gorm:"type:varchar(255)"`
     FileSize  string    `gorm:"type:varchar(255)"`
 }
+
 
 type User struct {
     gorm.Model
@@ -40,20 +41,27 @@ type VerifySignatureRequest struct {
     PublicKey   string `json:"publicKey"`
 }
 
-type Signature struct {
-    ID        uint           `gorm:"primaryKey" json:"id"`
-    FileID    uint           `gorm:"not null" json:"fileId"`
-    UserID    uint           `gorm:"not null" json:"userId"`
-    Signature string         `gorm:"type:text;not null" json:"signature"`
+type Signatures struct {
+    ID        int           `gorm:"primaryKey" json:"id"`
+    FileID    int           `gorm:"not null" json:"fileId"`
+    UserID    int           `gorm:"not null" json:"userId"`
+    FileSignature string         `gorm:"type:text;not null" json:"signature"`
 }
 
-type GenerateKeyPairRequest struct {
-    UserID uint `json:"userId"`
+type UserReq struct {
+    UserID  int     `json:"userId"`
+    KeyName string  `json:"keyName"`
+}
+
+type VerifyUserReq struct {
+    UserID  int     `json:"userId"`
+    FileID  int     `json:"fileId"`
 }
 
 // PublicKey representa la estructura de una llave pública en la base de datos
 type PublicKey struct {
     ID        uint   `json:"id" gorm:"primaryKey"`
-    UserID    uint   `json:"userId"`  // Llave foránea para el ID del usuario
+    UserID    int   `json:"userId"`  // Llave foránea para el ID del usuario
     PublicKey string `json:"publicKey"`     // Llave pública en formato PEM
+    KeyName   string `json:"keyName"` 
 }

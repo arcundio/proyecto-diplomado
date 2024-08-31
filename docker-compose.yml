@@ -12,4 +12,19 @@ services:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql  
     ports:
       - 5432:5432
+  backend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: backend
+    ports:
+      - 8505:8505
+    depends_on:
+      - persistencia
+    environment:
+      - DB_PORT=5432
+      - DB_USER=user
+      - DB_PASSWORD=user123
+      - DB_NAME=persistencia
+      - JWT_SECRET_KEY=secretsecretsecretsecretsecretsecretsecretsecretsecretsecret
 

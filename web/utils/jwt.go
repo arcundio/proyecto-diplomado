@@ -3,10 +3,7 @@ package utils
 import (
     "github.com/golang-jwt/jwt/v5"
     "time"
-    "github.com/joho/godotenv"
     "os"
-    "log"
-    "errors"
     "fmt"
 )
 
@@ -14,9 +11,6 @@ var ErrSecretKeyNotFound = fmt.Errorf("clave secreta no configurada")
 
 func GenerateToken(email string) (string, error) {
 
-    if err := godotenv.Load(); err != nil {
-        log.Fatalf("Error al cargar el archivo .env: %v", err)
-    }
 
     // Obtener la clave secreta del entorno
     secretKey := os.Getenv("JWT_SECRET_KEY")
