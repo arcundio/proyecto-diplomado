@@ -4,11 +4,13 @@
     padding: 10px;
     border-radius: 10px;
     margin-right: 10px;
+    border-color: #061d2c;
 }
 
 .file-list {
     width: 100%;
     background-color: #061d2c;
+    border-color: #061d2c;
     padding: 10px;
     border-radius: 10px;
 }

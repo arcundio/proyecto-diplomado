@@ -1,7 +1,8 @@
 .user-item {
     padding: 10px;
     background-color: #1f91dc;
-    border-radius: 5px;
+    border-radius: 10px;
+    border-color: #061d2c;
     margin-bottom: 5px;
     text-align: center;
     color: #d2e9f8;
@@ -15,7 +16,8 @@
     background-color: #1f91dc;
     padding: 10px;
     margin-bottom: 10px;
-    border-radius: 5px;
+    border-color: #061d2c;
+    border-radius: 10px;
     width: 100%;
     color: #d2e9f8;
 }

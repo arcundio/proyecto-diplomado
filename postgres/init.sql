@@ -33,6 +33,14 @@ CREATE TABLE signatures (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS Shared (
+    id SERIAL PRIMARY KEY,
+    id_user INTEGER NOT NULL,
+    id_user_shared INTEGER NOT NULL,
+    id_file INTEGER NOT NULL
+);
+
+
 -- Insertar datos iniciales
 INSERT INTO users (email, passwrd) VALUES
 ('admin@example.com', 'adminpassword'),

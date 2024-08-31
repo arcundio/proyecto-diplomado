@@ -6,23 +6,11 @@
     width: 100vw;  /* Ocupa toda la anchura de la ventana */
 }
 
-/* Estilo para la ventana de datos */
 .data-window {
     display: flex;
     height: 90vh;
     width: 90vw;
     background-color: #0c3a58;
-    border-radius: 10px;
-    padding: 20px;
-    box-sizing: border-box;
-}
-.data-window {
-    display: flex;
-    height: 90vh;
-    width: 90vw;
-    margin: auto;
-    background-color: #0c3a58;
-    border-radius: 10px;
     padding: 20px;
     box-sizing: border-box;
 }
@@ -31,37 +19,47 @@
     width: 25%;
     padding-right: 10px;
     box-sizing: border-box;
+    overflow-y: auto; /* Agrega desplazamiento si hay muchos usuarios */
 }
 
 .user-item {
     background-color: var(--color-primary);
     color: var(--color-tertiary);
-    padding: 10px;
+    padding: 15px; /* Aumenta el padding para mejor visibilidad */
+    border: 2px solid var(--color-tertiary);; /* Bordes visibles */
     margin-bottom: 10px;
     text-align: center;
     cursor: pointer;
     border-radius: 5px;
+    font-size: 16px; /* Asegura que el texto tenga un tamaño adecuado */
+    font-weight: bold; /* Opcional: hace el texto más visible */
 }
 
 .file-list {
     width: 75%;
     color: var(--color-secondary);
     background-color: var(--color-quaternary);
-    display: flex;
+    border: 5px solid #061d2c; /* Bordes visibles */
     border-radius: 10px;
+    display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
     gap: 20px;
+    padding: 10px; /* Añade padding para que los archivos no estén tan pegados al borde */
+    box-sizing: border-box;
 }
 
 .file-item {
     width: 150px;
     text-align: center;
+    border: 2px solid #061d2c; /* Bordes visibles */
+    border-radius: 10px;
     color: var(--color-tertiary);
+    background-color: var(--color-tertiary);
+    font-size: 14px; /* Asegura que el texto tenga un tamaño adecuado */
 }
 
 .file-icon {
-    top: -10px;
     width: 90px;
     height: 90px;
     margin-bottom: 10px;
@@ -72,17 +70,20 @@
     top: 20px;
     right: 20px;
     background-color: var(--color-primary);
-    border: none;
+    border: 2px solid var(--color-nonary); /* Bordes visibles */
     padding: 8px;
     border-radius: 50%;
-    border-color: var(--color-nonary);
     cursor: pointer;
     transition: background-color 0.3s ease;
-    width: 100px; /* Tamaño reducido */
-    height: 100px; /* Tamaño reducido */
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.upload-button {
+    position: relative; /* Asegura que el botón se posicione correctamente */
 }
 
 .upload-button img {
@@ -92,5 +93,4 @@
 
 .upload-button:hover {
     background-color: var(--color-secondary);
-    border-color: var(--color-nonary);
 }

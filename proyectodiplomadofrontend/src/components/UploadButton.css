@@ -3,8 +3,9 @@
     top: 20px;
     right: 20px;
     background-color: var(--color-primary);
-    border: none;
     padding: 8px;
+    border-color: #061d2c;
+    border-width: 10px;
     border-radius: 50%;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -18,8 +19,10 @@
 .upload-button img {
     width: 20px; /* Ajusta el tamaño del icono */
     height: 20px; /* Ajusta el tamaño del icono */
+    border-color: #061d2c;
+    border-width: 20px;
 }
 
 .upload-button:hover {
-    background-color: var(--color-secondary);
+    background-color: var(--color-octonary);
 }

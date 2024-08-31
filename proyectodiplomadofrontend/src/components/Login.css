@@ -40,14 +40,10 @@ body {
 }
 
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
+    position: relative;
 }
 
 .form-container {
-    top: 50%;
     background: #d2e9f8;
     padding: 20px;
     border-radius: 15px;

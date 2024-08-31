@@ -1,55 +1,108 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './DataWindow.css';
 import expedienteIcon from '../assets/expediente.png';
 import documentoIcon from '../assets/documento.png';
-import uploadIcon from '../assets/cloud-upload-alt.png';  // Asegúrate de tener este icono en la carpeta assets
+import uploadIcon from '../assets/cloud-upload-alt.png';
 
 function DataWindow() {
+    const [users, setUsers] = useState([]);
+    const [userFiles, setUserFiles] = useState({});
     const [selectedUser, setSelectedUser] = useState(null);
-    const [userFiles, setUserFiles] = useState({
-        'Usuario 1': [
-            { name: 'Archivo1.pdf', size: '15MB', type: 'normal' },
-            { name: 'Archivo2.pdf', size: '20MB', type: 'locked' }
-        ],
-        'Usuario 2': [
-            { name: 'Archivo3.pdf', size: '5MB', type: 'normal' }
-        ]
-    });
+    const [currentUserID, setCurrentUserID] = useState(null);
 
-    const users = ['Usuario 1', 'Usuario 2'];
+    useEffect(() => {
+        // Obtener el ID del usuario desde el almacenamiento local
+        const userID = localStorage.getItem('userID');
+        setCurrentUserID(userID);
+
+        // Obtener los usuarios al montar el componente
+        fetch('http://localhost:8505/users')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Usuarios obtenidos:', data); // Depuración
+                setUsers(data);
+            })
+            .catch(error => console.error('Error fetching users:', error));
+    }, []);
+
+    useEffect(() => {
+        if (selectedUser) {
+            // Obtener los archivos del usuario seleccionado
+            fetch(`http://localhost:8505/files/${selectedUser}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Archivos obtenidos:', data); // Depuración
+                    setUserFiles(prevState => ({
+                        ...prevState,
+                        [selectedUser]: data
+                    }));
+                })
+                .catch(error => console.error('Error fetching files:', error));
+        }
+    }, [selectedUser]);
 
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
-        if (file && selectedUser) {
-            const newFile = { name: file.name, size: `${(file.size / (1024 * 1024)).toFixed(2)}MB`, type: 'normal' };
-            setUserFiles({
-                ...userFiles,
-                [selectedUser]: [...userFiles[selectedUser], newFile]
-            });
+        if (file && currentUserID) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('userID', currentUserID); // Usar el ID del usuario actual
+
+            // Depuración: mostrar contenido de FormData
+            for (const [key, value] of formData.entries()) {
+                console.log(`${key}: ${value}`);
+            }
+
+            fetch(`http://localhost:8505/upload`, {
+                method: 'POST',
+                body: formData,
+            })
+                .then(response => {
+                    if (response.ok) {
+                        return fetch(`http://localhost:8505/files/${currentUserID}`);
+                    } else {
+                        throw new Error('Error uploading file');
+                    }
+                })
+                .then(response => response.json())
+                .then(data => setUserFiles(prevState => ({
+                    ...prevState,
+                    [currentUserID]: data
+                })))
+                .catch(error => console.error('Error uploading file:', error));
         }
     };
+
 
     return (
         <div className="container">
             <div className="data-window">
                 <div className="user-list">
-                    {users.map(user => (
-                        <div key={user} className="user-item" onClick={() => setSelectedUser(user)}>
-                            {user}
-                        </div>
-                    ))}
+                    {users.length === 0 ? (
+                        <p>No users available</p> // Mensaje en caso de que no haya usuarios
+                    ) : (
+                        users.map(user => (
+                            <div
+                                key={user.UserID} // Usa UserID como key
+                                className="user-item"
+                                onClick={() => setSelectedUser(user.UserID)}
+                            >
+                                {user.email} {/* Mostrar el email del usuario */}
+                            </div>
+                        ))
+                    )}
                 </div>
                 <div className="file-list">
-                    {selectedUser && userFiles[selectedUser] && userFiles[selectedUser].map((file, index) => (
-                        <div key={index} className="file-item">
+                    {selectedUser && userFiles[selectedUser] && userFiles[selectedUser].map((file) => (
+                        <div key={file.ID} className="file-item"> {/* Usar file.ID como key */}
                             <img
-                                src={file.type === 'normal' ? expedienteIcon : documentoIcon}
-                                alt={file.name}
+                                src={file.FileName.includes('png') ? expedienteIcon : documentoIcon}
+                                alt={file.FileName}
                                 className="file-icon"
                             />
                             <div className="file-info">
-                                <div>{file.name}</div>
-                                <div>{file.size}</div>
+                                <div>{file.FileName}</div>
+                                <div>{file.FileSize}</div>
                             </div>
                         </div>
                     ))}

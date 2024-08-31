@@ -6,6 +6,7 @@
     background-color: #0c3a58;
     padding: 20px;
     border-radius: 10px;
+    border-color: #061d2c;
     box-sizing: border-box;
 }
 
@@ -13,6 +14,7 @@
     width: 30%;
     background-color: #061d2c;
     padding: 10px;
+    border-color: #061d2c;
     border-radius: 10px;
     margin-right: 10px;
     box-sizing: border-box;
@@ -25,6 +27,7 @@
     background-color: #061d2c;
     padding: 10px;
     border-radius: 10px;
+    border-color: #061d2c;
     box-sizing: border-box;
     display: flex;
     flex-wrap: wrap;
@@ -36,6 +39,7 @@
     padding: 10px;
     background-color: #1f91dc;
     border-radius: 5px;
+    border-color: #061d2c;
     margin-bottom: 5px;
     text-align: center;
     color: #d2e9f8;
@@ -47,9 +51,10 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: #1f91dc;
+    background-color: #d2e9f8;
     padding: 10px;
     margin-bottom: 10px;
+    border-color: #061d2c;
     border-radius: 5px;
     width: 100px;
     color: #d2e9f8;
@@ -59,5 +64,6 @@
 .file-item img {
     width: 50px;
     height: 50px;
+    border-color: #061d2c;
     margin-bottom: 5px;
 }
