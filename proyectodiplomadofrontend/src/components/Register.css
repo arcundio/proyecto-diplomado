@@ -1,0 +1,130 @@
+/* Register.css */
+:root {
+    --color-primary: #1f91dc;
+    --color-secondary: #79bdea;
+    --color-tertiary: #d2e9f8;
+    --color-quaternary: #6d8392;
+    --color-quinary: #061d2c;
+    --color-senary: #0c3a58;
+    --color-septenary: #db1f32;
+    --color-octonary: #dbc81f;
+    --color-nonary: #90db1f;
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.form-container {
+    background: #d2e9f8;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+
+.register-container {
+    position: relative; /* Asegúrate de que el contenedor tenga un posicionamiento relativo */
+}
+
+.register-container::before {
+    align-items: center;
+    content: '';
+    position: absolute;
+    justify-content: center;
+    top: 10%; /* Ajusta el valor para la posición vertical si es necesario */
+    left: -10%; /* Mueve el elemento a la izquierda. Ajusta el valor según sea necesario */
+    width: 60%; /* Ajusta el ancho si deseas que ocupe más o menos espacio */
+    height: 80%;
+    background-image: radial-gradient(at 57.55% 37%, hsla(142.79, 91.23%, 44.71%, 1) 0%, hsla(142.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 0.42% 28.61%, hsla(232.5, 91.23%, 44.71%, 1) 0%, hsla(232.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 21.81% 66.13%, hsla(322.5, 91.23%, 44.71%, 1) 0%, hsla(322.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 23.75% 94.74%, hsla(52.79, 91.23%, 44.71%, 1) 0%, hsla(52.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 36.72% 47.85%, hsla(142.79, 91.23%, 44.71%, 1) 0%, hsla(142.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 10.32% 69.99%, hsla(232.5, 91.23%, 44.71%, 1) 0%, hsla(232.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 72.94% 77.77%, hsla(322.5, 91.23%, 44.71%, 1) 0%, hsla(322.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 27.56% 62.02%, hsla(52.79, 91.23%, 44.71%, 1) 0%, hsla(52.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 25.39% 42.58%, hsla(142.79, 91.23%, 44.71%, 1) 0%, hsla(142.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 53.89% 92.62%, hsla(232.5, 91.23%, 44.71%, 1) 0%, hsla(232.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 80.46% 72.60%, hsla(322.5, 91.23%, 44.71%, 1) 0%, hsla(322.5, 91.23%, 44.71%, 0) 100%);
+    z-index: -1;
+    border-radius: 15px;
+}
+
+body {
+    background-color: #061d2c;
+    color: #061d2c;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+
+.form-container {
+    background: #d2e9f8;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+}
+
+.form-container h2 {
+    color: #061d2c;
+    text-align: center;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--color-quinary);
+}
+
+.form-container input {
+    width: 80%;
+    padding: 10px;
+    margin: 0 auto 16px;
+    border: 1px solid var(--color-quaternary);
+    border-radius: 5px;
+    display: block;
+}
+
+.form-container button {
+    background-color: #061d2c;
+    color: var(--color-tertiary);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    transition: background-color 0.3s ease;
+}
+
+.form-container button:hover {
+    background-color: var(--color-secondary);
+}
+
+.login-link {
+    text-align: center;
+    color: var(--color-primary);
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.login-link a {
+    color: var(--color-octonary);
+    text-decoration: none;
+}
+

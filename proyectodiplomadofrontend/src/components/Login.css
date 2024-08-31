@@ -1,0 +1,203 @@
+/* Estilos globales */
+:root {
+    --color-primary: #1f91dc;
+    --color-secondary: #79bdea;
+    --color-tertiary: #d2e9f8;
+    --color-quaternary: #6d8392;
+    --color-quinary: #061d2c;
+    --color-senary: #0c3a58;
+    --color-septenary: #db1f32;
+    --color-octonary: #dbc81f;
+    --color-nonary: #90db1f;
+}
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.form-container {
+    background: #d2e9f8;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+body {
+    background-color: #061d2c;
+    color: #061d2c;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.form-container {
+    top: 50%;
+    background: #d2e9f8;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    justify-content: center;
+    align-items: center;
+    width: 300px;
+}
+
+.form-container h2 {
+    color: #061d2c;
+    text-align: center;
+}
+
+.form-container label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--color-quinary);
+}
+
+.form-container button {
+    background-color: #061d2c;
+    color: var(--color-tertiary);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease;
+}
+
+.form-container button:hover {
+    background-color: var(--color-secondary);
+}
+
+.register-link {
+    text-align: center;
+    color: var(--color-primary);
+    margin-top: 10px;
+    cursor: pointer;
+}
+
+.register-link a {
+    color: var(--color-octonary);
+    text-decoration: none;
+}
+
+.login-container {
+    position: relative; /* Asegúrate de que el contenedor tenga un posicionamiento relativo */
+}
+
+.login-container::before {
+    align-items: center;
+    content: '';
+    position: absolute;
+    justify-content: center;
+    top: 10%; /* Ajusta el valor para la posición vertical si es necesario */
+    left: -10%; /* Mueve el elemento a la izquierda. Ajusta el valor según sea necesario */
+    width: 60%; /* Ajusta el ancho si deseas que ocupe más o menos espacio */
+    height: 80%;
+    background-image: radial-gradient(at 57.55% 37%, hsla(142.79, 91.23%, 44.71%, 1) 0%, hsla(142.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 0.42% 28.61%, hsla(232.5, 91.23%, 44.71%, 1) 0%, hsla(232.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 21.81% 66.13%, hsla(322.5, 91.23%, 44.71%, 1) 0%, hsla(322.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 23.75% 94.74%, hsla(52.79, 91.23%, 44.71%, 1) 0%, hsla(52.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 36.72% 47.85%, hsla(142.79, 91.23%, 44.71%, 1) 0%, hsla(142.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 10.32% 69.99%, hsla(232.5, 91.23%, 44.71%, 1) 0%, hsla(232.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 72.94% 77.77%, hsla(322.5, 91.23%, 44.71%, 1) 0%, hsla(322.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 27.56% 62.02%, hsla(52.79, 91.23%, 44.71%, 1) 0%, hsla(52.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 25.39% 42.58%, hsla(142.79, 91.23%, 44.71%, 1) 0%, hsla(142.79, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 53.89% 92.62%, hsla(232.5, 91.23%, 44.71%, 1) 0%, hsla(232.5, 91.23%, 44.71%, 0) 100%),
+    radial-gradient(at 80.46% 72.60%, hsla(322.5, 91.23%, 44.71%, 1) 0%, hsla(322.5, 91.23%, 44.71%, 0) 100%);
+    z-index: -1;
+    border-radius: 15px;
+}
+
+/* Asegúrate de que el contenedor del botón esté centrado */
+.button-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ajusta la altura del contenedor según sea necesario */
+    position: relative;
+}
+
+.button-85 {
+    padding: 0.6em 2em;
+    border: none;
+    outline: none;
+    color: rgb(255, 255, 255);
+    background: #6d8392;
+    cursor: pointer;
+    position: relative;
+    z-index: 0;
+    border-radius: 10px;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+}
+
+.button-85:before {
+    content: "";
+    background: linear-gradient(
+            45deg,
+            #ff0000,
+            #ff7300,
+            #fffb00,
+            #48ff00,
+            #00ffd5,
+            #002bff,
+            #7a00ff,
+            #ff00c8,
+            #ff0000
+    );
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    background-size: 400%;
+    z-index: -1;
+    filter: blur(5px);
+    -webkit-filter: blur(5px);
+    width: calc(100% + 4px);
+    height: calc(100% + 4px);
+    animation: glowing-button-85 20s linear infinite;
+    transition: opacity 0.3s ease-in-out;
+    border-radius: 10px;
+}
+
+@keyframes glowing-button-85 {
+    0% {
+        background-position: 0 0;
+    }
+    50% {
+        background-position: 400% 0;
+    }
+    100% {
+        background-position: 0 0;
+    }
+}
+
+.button-85:after {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: #061d2c;
+    left: 0;
+    top: 0;
+    border-radius: 10px;
+}

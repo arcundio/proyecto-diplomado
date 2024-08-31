@@ -1,0 +1,96 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Ocupa toda la altura de la ventana */
+    width: 100vw;  /* Ocupa toda la anchura de la ventana */
+}
+
+/* Estilo para la ventana de datos */
+.data-window {
+    display: flex;
+    height: 90vh;
+    width: 90vw;
+    background-color: #0c3a58;
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+.data-window {
+    display: flex;
+    height: 90vh;
+    width: 90vw;
+    margin: auto;
+    background-color: #0c3a58;
+    border-radius: 10px;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.user-list {
+    width: 25%;
+    padding-right: 10px;
+    box-sizing: border-box;
+}
+
+.user-item {
+    background-color: var(--color-primary);
+    color: var(--color-tertiary);
+    padding: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.file-list {
+    width: 75%;
+    color: var(--color-secondary);
+    background-color: var(--color-quaternary);
+    display: flex;
+    border-radius: 10px;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 20px;
+}
+
+.file-item {
+    width: 150px;
+    text-align: center;
+    color: var(--color-tertiary);
+}
+
+.file-icon {
+    top: -10px;
+    width: 90px;
+    height: 90px;
+    margin-bottom: 10px;
+}
+
+.upload-icon {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: var(--color-primary);
+    border: none;
+    padding: 8px;
+    border-radius: 50%;
+    border-color: var(--color-nonary);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: 100px; /* Tamaño reducido */
+    height: 100px; /* Tamaño reducido */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.upload-button img {
+    width: 70px; /* Ajusta el tamaño del icono */
+    height: 70px; /* Ajusta el tamaño del icono */
+}
+
+.upload-button:hover {
+    background-color: var(--color-secondary);
+    border-color: var(--color-nonary);
+}

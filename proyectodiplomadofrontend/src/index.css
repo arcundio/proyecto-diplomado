@@ -1,0 +1,78 @@
+body {
+  background-color: #061d2c;
+  color: #d2e9f8;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+/* src/index.css */
+
+body {
+  background-color: #061d2c;
+  color: #d2e9f8;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --color-primary: #1f91dc;
+  --color-secondary: #79bdea;
+  --color-tertiary: #d2e9f8;
+  --color-quaternary: #6d8392;
+  --color-quinary: #061d2c;
+  --color-senary: #0c3a58;
+  --color-septenary: #db1f32;
+  --color-octonary: #dbc81f;
+  --color-nonary: #90db1f;
+}
+@keyframes moveToRight {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes moveToLeft {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+/* Desvanecimiento entre páginas */
+.fade {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+html, body, #root {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
