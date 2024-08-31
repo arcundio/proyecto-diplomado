@@ -7,6 +7,7 @@ import (
     "web/controllers"
     "web/middleware"
     "github.com/gorilla/mux"
+    "github.com/gorilla/handlers"
 )
 
 func main() {
@@ -32,7 +33,14 @@ func main() {
     protected.HandleFunc("/users/{id}", controllers.GetUser).Methods("GET")
     protected.HandleFunc("/users/{id}", controllers.UpdateUser).Methods("PUT")
     protected.HandleFunc("/users/{id}", controllers.DeleteUser).Methods("DELETE")
+    
+        // Configurar CORS
+    corsHandler := handlers.CORS(
+            handlers.AllowedOrigins([]string{"*"}),  // Permitir todas las orígenes
+            handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}), // Permitir estos métodos
+            handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}), // Permitir estos encabezados
+    )(r)
 
     // Inicia el servidor
-    log.Fatal(http.ListenAndServe(":8505", r))
+    log.Fatal(http.ListenAndServe(":8505", corsHandler))
 }
