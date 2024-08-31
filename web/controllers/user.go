@@ -23,6 +23,7 @@ import (
 
 // Login maneja la autenticación y genera un token JWT
 func Login(w http.ResponseWriter, r *http.Request) {
+
     var credentials struct {
         Email    string `json:"email"`
         Passwrd string `json:"passwrd"`
@@ -60,6 +61,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 // Crear usuario
 func CreateUser(w http.ResponseWriter, r *http.Request) {
+    
     var user models.User
     if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
         http.Error(w, "Invalid request payload", http.StatusBadRequest)
