@@ -25,15 +25,21 @@ func main() {
     r.HandleFunc("/generateKeys", controllers.GenerateKeyPairHandler).Methods("POST")
     r.HandleFunc("/files/{id}", controllers.GetFilesByUserID).Methods("GET")
     r.HandleFunc("/verify", controllers.VerifySignature).Methods("POST")
+    r.HandleFunc("/users", controllers.GetUsers).Methods("GET")
+    r.HandleFunc("/users/{id}", controllers.GetUser).Methods("GET")
+    r.HandleFunc("/users/{id}", controllers.UpdateUser).Methods("PUT")
+    r.HandleFunc("/users/{id}", controllers.DeleteUser).Methods("DELETE")
+
 
     // Rutas protegidas
     protected := r.PathPrefix("/").Subrouter()
     protected.Use(middleware.AuthMiddleware)
+    /**
     protected.HandleFunc("/users", controllers.GetUsers).Methods("GET")
     protected.HandleFunc("/users/{id}", controllers.GetUser).Methods("GET")
     protected.HandleFunc("/users/{id}", controllers.UpdateUser).Methods("PUT")
     protected.HandleFunc("/users/{id}", controllers.DeleteUser).Methods("DELETE")
-    
+    **/
         // Configurar CORS
     corsHandler := handlers.CORS(
             handlers.AllowedOrigins([]string{"*"}),  // Permitir todas las orígenes
