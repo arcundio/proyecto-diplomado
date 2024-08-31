@@ -61,7 +61,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 // Crear usuario
 func CreateUser(w http.ResponseWriter, r *http.Request) {
-    
+
     var user models.User
     if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
         http.Error(w, "Invalid request payload", http.StatusBadRequest)
@@ -96,8 +96,9 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 // Obtener todos los usuarios
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-    var users []models.User
-    config.DB.Find(&users)
+
+    var users []models.UserDTO
+    config.DB.Table("users").Find(&users)
     json.NewEncoder(w).Encode(users)
 }
 

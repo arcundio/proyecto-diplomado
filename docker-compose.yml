@@ -27,4 +27,5 @@ services:
       - DB_PASSWORD=user123
       - DB_NAME=persistencia
       - JWT_SECRET_KEY=secretsecretsecretsecretsecretsecretsecretsecretsecretsecret
+    restart: always
 

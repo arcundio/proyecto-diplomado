@@ -1,7 +1,6 @@
 package models
 
 import (
-    "gorm.io/gorm"
 )
 
 type File struct {
@@ -16,9 +15,14 @@ type File struct {
 
 
 type User struct {
-    gorm.Model
+    UserID   int    `gorm:"unique" json:"id"`
     Email    string `gorm:"unique" json:"email"`
-    Passwrd string `json:"passwrd"`
+    Passwrd string  `json:"passwrd"`
+}
+
+type UserDTO struct {
+    UserID   int    `gorm:"column:id; json:"id"`
+    Email    string `gorm:"unique" json:"email"`
 }
 
 // Estructura del JSON
