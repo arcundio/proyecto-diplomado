@@ -11,7 +11,7 @@ type File struct {
 }
 
 type User struct {
-	UserID  int    `json:"user_id" gorm:"primaryKey;autoIncrement"`
+	UserID  int    `json:"id" gorm:"primaryKey;autoIncrement"`
 	Email   string `gorm:"unique" json:"email"`
 	Passwrd string `json:"passwrd"`
 }
@@ -64,4 +64,11 @@ type PublicKey struct {
 	UserID    int    `json:"userId"`    // Llave foránea para el ID del usuario
 	PublicKey string `json:"publicKey"` // Llave pública en formato PEM
 	KeyName   string `json:"keyName"`
+}
+
+type SharedFile struct {
+	ID           int `json:"id"`
+	IDUser       int `json:"id_user"`
+	IDUserShared int `json:"id_user_shared"`
+	IDFile       int `json:"id_file"`
 }

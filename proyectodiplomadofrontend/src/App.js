@@ -4,6 +4,7 @@ import Login from './components/Login';
 import DataWindow from './components/DataWindow';
 import ProtectedRoute from './components/ProtectedRoute';
 import Register from './components/Register';
+import FileDetail from "./components/FileDetail";
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
                         path="/data"
                         element={<ProtectedRoute element={<DataWindow />} />}
                     />
+                    <Route path="/data/file/:hash" element={<FileDetail/>} />
                     <Route path="*" element={<Login />} />
                 </Routes>
             </Router>

@@ -33,7 +33,7 @@ CREATE TABLE signatures (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS Shared (
+CREATE TABLE shared (
     id SERIAL PRIMARY KEY,
     id_user INTEGER NOT NULL,
     id_user_shared INTEGER NOT NULL,

@@ -10,15 +10,31 @@ import (
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 	"io"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"web/config"
 	"web/models"
 	"web/utils"
 )
+
+type Claims struct {
+	UserID int `json:"user_id"`
+	jwt.RegisteredClaims
+}
+type ShareRequest struct {
+	Email  string `json:"email"`
+	FileID int    `json:"fileID"`
+	UserID int    `json:"userID"`
+}
+
+var jwtSecret = os.Getenv("JWT_SECRET_KEY")
 
 // Login maneja la autenticación y genera un token JWT
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -33,11 +49,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var user models.User
-	result := config.DB.Where("email = ?", credentials.Email).First(&user)
+	result := config.DB.Table("users").Where("email = ?", credentials.Email).First(&user)
 	if result.Error != nil {
 		http.Error(w, "User not found", http.StatusUnauthorized)
 		return
 	}
+	fmt.Printf("Retrieved User: %+v\n", user)
 
 	// Verificar la contraseña
 	err := bcrypt.CompareHashAndPassword([]byte(user.Passwrd), []byte(credentials.Passwrd))
@@ -46,15 +63,18 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generar el token
-	token, err := utils.GenerateToken(user.Email)
+	// Generar el token con el UserID
+	token, err := utils.GenerateToken(user.Email, user.UserID)
 	if err != nil {
 		http.Error(w, "Could not generate token", http.StatusInternalServerError)
 		return
 	}
 
-	// Enviar el token en la respuesta
-	response := map[string]string{"token": token}
+	// Enviar el token y el userID en la respuesta
+	response := map[string]interface{}{
+		"token":  token,
+		"userID": user.UserID, // Agregar el userID a la respuesta
+	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 }
@@ -253,6 +273,37 @@ func SignFileHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Archivo firmado exitosamente"))
+}
+
+func VerifyFileSignatureHandler(w http.ResponseWriter, r *http.Request) {
+	// Obtener el ID del archivo desde los parámetros de la solicitud
+	vars := mux.Vars(r)
+	fileIDStr := vars["fileID"]
+
+	fileID, err := strconv.Atoi(fileIDStr)
+	if err != nil {
+		http.Error(w, "Invalid file ID", http.StatusBadRequest)
+		return
+	}
+
+	var signature models.Signatures
+	result := config.DB.Where("file_id = ?", fileID).First(&signature)
+	if result.Error != nil {
+		if result.Error == gorm.ErrRecordNotFound {
+			// No hay firma encontrada
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(map[string]bool{"signed": false})
+		} else {
+			http.Error(w, "Error querying signatures", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// Si llegamos aquí, hay una firma encontrada
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]bool{"signed": true})
 }
 
 // GenerateKeyPairHandler maneja la generación de llaves RSA, almacenamiento de la llave pública y descarga de la llave privada
@@ -454,6 +505,254 @@ func SignData(privKey *rsa.PrivateKey, data []byte) (string, error) {
 	}
 	return hex.EncodeToString(signature), nil
 
+}
+func CheckFileOwner(w http.ResponseWriter, r *http.Request) {
+	// Obtener el token del encabezado Authorization
+	authHeader := r.Header.Get("Authorization")
+	if !strings.HasPrefix(authHeader, "Bearer ") {
+		http.Error(w, "Invalid authorization header", http.StatusUnauthorized)
+		return
+	}
+
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	// Extraer el UserID del JWT
+	userID, err := utils.ExtractUserIDFromJWT(tokenString)
+	if err != nil {
+		http.Error(w, "Could not extract user ID from token", http.StatusUnauthorized)
+		return
+	}
+
+	// Obtener el ID del archivo del parámetro de la ruta
+	params := mux.Vars(r)
+	fileIDStr := params["id"]
+	fileID, err := strconv.Atoi(fileIDStr)
+	if err != nil {
+		http.Error(w, "Invalid file ID", http.StatusBadRequest)
+		return
+	}
+
+	// Consultar el archivo por ID
+	var file models.File
+	result := config.DB.Where("id = ?", fileID).First(&file)
+	if result.Error != nil {
+		http.Error(w, "File not found", http.StatusNotFound)
+		return
+	}
+
+	// Verificar si el archivo pertenece al usuario
+	isOwner := file.UserID == userID
+
+	// Enviar la respuesta
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]bool{"isOwner": isOwner})
+}
+
+func GetSharedFilesHandler(w http.ResponseWriter, r *http.Request) {
+	// Obtener el token del encabezado Authorization
+	authHeader := r.Header.Get("Authorization")
+	if !strings.HasPrefix(authHeader, "Bearer ") {
+		http.Error(w, "Invalid authorization header", http.StatusUnauthorized)
+		return
+	}
+
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	// Extraer el UserID del JWT
+	currentUserID, err := utils.ExtractUserIDFromJWT(tokenString)
+	if err != nil {
+		http.Error(w, "Could not extract user ID from token", http.StatusUnauthorized)
+		return
+	}
+
+	// Obtener el ID del usuario al que se le está intentando ver los archivos compartidos
+	params := mux.Vars(r)
+	selectedUserIDStr := params["id"]
+	selectedUserID, err := strconv.Atoi(selectedUserIDStr)
+	if err != nil {
+		http.Error(w, "Invalid user ID", http.StatusBadRequest)
+		return
+	}
+
+	// Consultar archivos compartidos por el usuario actual con el usuario seleccionado
+	var sharedFiles []models.SharedFile
+	result := config.DB.Table("shared").Where("id_user = ? AND id_user_shared = ?", selectedUserID, currentUserID).Find(&sharedFiles)
+	if result.Error != nil {
+		http.Error(w, "Error retrieving shared files", http.StatusInternalServerError)
+		return
+	}
+
+	// Depuración: Verificar si hay archivos compartidos
+	if len(sharedFiles) == 0 {
+		fmt.Println("No shared files found for user:", currentUserID)
+		http.Error(w, "No shared files found", http.StatusNotFound)
+		return
+	}
+
+	// Obtener los IDs de archivos
+	var fileIDs []int
+	for _, sharedFile := range sharedFiles {
+		fileIDs = append(fileIDs, sharedFile.IDFile)
+	}
+
+	// Depuración: Verificar los fileIDs que se van a usar en la consulta
+	fmt.Println("File IDs to retrieve:", fileIDs)
+
+	// Consultar los archivos con los IDs obtenidos
+	var files []models.File
+	result = config.DB.Where("id IN (?)", fileIDs).Find(&files)
+	if result.Error != nil {
+		http.Error(w, "Error retrieving files", http.StatusInternalServerError)
+		return
+	}
+
+	// Depuración: Verificar si se encontraron archivos
+	if len(files) == 0 {
+		fmt.Println("No files found for IDs:", fileIDs)
+		http.Error(w, "No files found", http.StatusNotFound)
+		return
+	}
+
+	// Enviar la respuesta
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(files)
+}
+func GetSharedFilesUsers(w http.ResponseWriter, r *http.Request) {
+	// Obtener el token del encabezado Authorization
+	authHeader := r.Header.Get("Authorization")
+	if !strings.HasPrefix(authHeader, "Bearer ") {
+		http.Error(w, "Invalid authorization header", http.StatusUnauthorized)
+		return
+	}
+
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	// Extraer el UserID del JWT
+	userID, err := utils.ExtractUserIDFromJWT(tokenString)
+	if err != nil {
+		http.Error(w, "Could not extract user ID from token", http.StatusUnauthorized)
+		return
+	}
+
+	// Consultar usuarios que han compartido archivos con el usuario que inició sesión
+	var sharedFiles []models.SharedFile
+	result := config.DB.Table("shared").Where("id_user_shared = ?", userID).Find(&sharedFiles)
+	if result.Error != nil {
+		http.Error(w, "Error retrieving shared files", http.StatusInternalServerError)
+		return
+	}
+
+	var userIDs []int
+	for _, sharedFile := range sharedFiles {
+		if !contains(userIDs, sharedFile.IDUser) {
+			userIDs = append(userIDs, sharedFile.IDUser)
+		}
+	}
+
+	var users []models.User
+	result = config.DB.Where("id IN (?)", userIDs).Find(&users)
+	if result.Error != nil {
+		http.Error(w, "Error retrieving users", http.StatusInternalServerError)
+		return
+	}
+
+	// Enviar la respuesta con la lista de usuarios
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(users)
+}
+
+// Helper function to check if a slice contains an integer
+func contains(slice []int, item int) bool {
+	for _, v := range slice {
+		if v == item {
+			return true
+		}
+	}
+	return false
+}
+func ShareFileHandler(w http.ResponseWriter, r *http.Request) {
+	// Obtener el token del encabezado Authorization
+	authHeader := r.Header.Get("Authorization")
+	if !strings.HasPrefix(authHeader, "Bearer ") {
+		http.Error(w, "Invalid authorization header", http.StatusUnauthorized)
+		return
+	}
+
+	tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+
+	// Imprimir el token para debug
+	fmt.Println("Received Token:", tokenString)
+
+	// Extraer el UserID del JWT
+	currentUserID, err := utils.ExtractUserIDFromJWT(tokenString)
+	if err != nil {
+		http.Error(w, "Could not extract user ID from token", http.StatusUnauthorized)
+		return
+	}
+
+	// Imprimir el UserID para debug
+	fmt.Println("Extracted UserID:", currentUserID)
+
+	// Obtener el fileID de la URL
+	fileIDStr := mux.Vars(r)["fileID"]
+	fileID, err := strconv.Atoi(fileIDStr)
+	if err != nil {
+		http.Error(w, "Invalid file ID", http.StatusBadRequest)
+		return
+	}
+
+	// Decodificar el JSON del cuerpo de la solicitud para obtener el email
+	var shareReq ShareRequest
+	if err := json.NewDecoder(r.Body).Decode(&shareReq); err != nil {
+		http.Error(w, "Invalid request payload", http.StatusBadRequest)
+		return
+	}
+
+	// Imprimir el payload para debug
+	fmt.Printf("Request Payload: Email=%s, FileID=%d, UserID=%d\n", shareReq.Email, shareReq.FileID, shareReq.UserID)
+
+	// Verificar que el archivo pertenezca al usuario actual
+	var file models.File
+	if result := config.DB.Where("id = ? AND user_id = ?", fileID, currentUserID).First(&file); result.Error != nil {
+		http.Error(w, "File not found or you do not have permission to share this file", http.StatusNotFound)
+		return
+	}
+
+	// Obtener el UserID del usuario con el que se va a compartir el archivo a partir del correo
+	var targetUser models.User
+	if result := config.DB.Where("email = ?", shareReq.Email).First(&targetUser); result.Error != nil {
+		http.Error(w, "User not found with the specified email", http.StatusNotFound)
+		return
+	}
+
+	// Imprimir el UserID del usuario objetivo para debug
+	fmt.Printf("Target UserID: %d\n", targetUser.UserID)
+
+	// Usar el ID del usuario objetivo en lugar del UserID proporcionado en el request
+	shareReq.UserID = targetUser.UserID
+
+	// Verificar si ya existe un registro que comparte el archivo con el mismo usuario
+	var existingShare models.SharedFile
+	if result := config.DB.Table("shared").Where("id_user = ? AND id_user_shared = ? AND id_file = ?", currentUserID, shareReq.UserID, fileID).First(&existingShare); result.Error == nil {
+		http.Error(w, "This file is already shared with the specified user", http.StatusConflict)
+		return
+	}
+
+	// Crear el registro de compartición en la base de datos
+	sharedFile := models.SharedFile{
+		IDUser:       currentUserID,
+		IDUserShared: shareReq.UserID,
+		IDFile:       fileID,
+	}
+
+	if result := config.DB.Table("shared").Create(&sharedFile); result.Error != nil {
+		http.Error(w, "Error sharing file", http.StatusInternalServerError)
+		return
+	}
+
+	// Enviar una respuesta de éxito
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{"message": "File shared successfully"})
 }
 
 // verifySignature verifica una firma usando una llave pública RSA
