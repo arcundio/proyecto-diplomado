@@ -22,7 +22,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-gs-ping
 # But we can document in the Dockerfile what ports
 # the application is going to listen on by default.
 # https://docs.docker.com/engine/reference/builder/#expose
-EXPOSE 8085
+EXPOSE 8505
 
 # Run
 CMD ["/docker-gs-ping"]

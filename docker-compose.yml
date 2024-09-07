@@ -1,6 +1,33 @@
 version: '3.7'
 
 services:
+  traefik:
+    image: traefik:v2.10
+    container_name: traefik
+    command:
+      - "--api.insecure=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web-secure.address=:443"  # Añadimos HTTPS
+      - "--entrypoints.web-secure.http.tls=true"  # Activa TLS en el puerto 443
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"  # No expone servicios por defecto
+      - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"  # Redirige HTTP a HTTPS
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"  # Asegura redirección a HTTPS
+    ports:
+      - "80:80"  # Puerto HTTP (redirigido a HTTPS)
+      - "443:443"  # Puerto HTTPS
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Permite a Traefik interactuar con Docker
+      - ./certs:/certs  # Montamos la carpeta con los certificados
+    depends_on:
+      - backend
+      - frontend
+    labels:
+      - "traefik.http.routers.api.rule=Host(`localhost`)"  # Reemplaza con tu dominio
+      - "traefik.http.routers.api.entrypoints=web-secure"  # Solo HTTPS
+      - "traefik.http.routers.api.tls=true"  # Activa TLS para este router
+      - "traefik.http.routers.api.tls.certresolver=selfsigned"  # Usar certificado autofirmado
+
   persistencia:
     image: postgres
     container_name: persistencia
@@ -10,33 +37,36 @@ services:
       - POSTGRES_PASSWORD=user123
     volumes:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql  
-    ports:
-      - 5432:5432
+    labels:
+      - "traefik.enable=false"  # No exponer el servicio externamente
 
   backend:
     build:
       context: ./web
       dockerfile: Dockerfile
     container_name: backend
-    ports:
-      - 8505:8505
-    depends_on:
-      - persistencia
     environment:
       - DB_PORT=5432
       - DB_USER=user
       - DB_PASSWORD=user123
       - DB_NAME=persistencia
       - JWT_SECRET_KEY=secretsecretsecretsecretsecretsecretsecretsecretsecretsecret
-    restart: always
+    labels:
+      - "traefik.enable=false"  # No exponer el backend
+    depends_on:
+      - persistencia
 
   frontend:
     build:
       context: ./proyectodiplomadofrontend
       dockerfile: Dockerfile
     container_name: frontend
-    ports:
-      - "3000:3000"
+    labels:
+      - "traefik.enable=true"  # Exponer el servicio frontend
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"  # Reemplaza con tu dominio
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"  # Puerto interno del frontend
+      - "traefik.http.routers.frontend.entrypoints=web-secure"  # El frontend solo estará disponible en HTTPS
+      - "traefik.http.routers.frontend.tls=true"  # Activar TLS
+      - "traefik.http.routers.frontend.tls.certresolver=selfsigned"  # Usar certificado autofirmado
     depends_on:
       - backend
-
