@@ -157,7 +157,13 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		// no existe el correo
 		var user models.User
 		user.Email = email
-		var password = "user123"
+		
+		password, err := generateRandomString(16)
+		if err != nil {
+			fmt.Println("Error generando la cadena:", err)
+			return
+		}
+
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 		if err != nil {
 			http.Error(w, "Could not hash password", http.StatusInternalServerError)
@@ -201,4 +207,17 @@ func getUserEmail(client *http.Client) (string, error) {
 	}
 
 	return userInfo.Email, nil
+}
+
+// Genera una cadena aleatoria de longitud especificada
+func generateRandomString(length int) (string, error) {
+    // Genera una secuencia de bytes aleatorios
+    randomBytes := make([]byte, length)
+    _, err := rand.Read(randomBytes)
+    if err != nil {
+        return "", err
+    }
+
+    // Codifica los bytes aleatorios en una cadena segura usando base64
+    return base64.URLEncoding.EncodeToString(randomBytes)[:length], nil
 }
