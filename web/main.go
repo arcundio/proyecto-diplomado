@@ -16,6 +16,8 @@ import (
     "golang.org/x/oauth2/google"
 	"encoding/json"
 	"golang.org/x/crypto/bcrypt"
+	"crypto/rand"
+    "encoding/base64"
 )
 
 var (
@@ -157,7 +159,7 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		// no existe el correo
 		var user models.User
 		user.Email = email
-		
+
 		password, err := generateRandomString(16)
 		if err != nil {
 			fmt.Println("Error generando la cadena:", err)
