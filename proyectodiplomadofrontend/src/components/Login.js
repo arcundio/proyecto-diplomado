@@ -11,10 +11,14 @@ function Login() {
         navigate('/register');
     };
 
+    const handleGoogleLogin = () => {
+        window.location.href = 'https://localhost:8505/auth/google';
+    };
+
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('http://localhost:8505/login', {
+            const response = await fetch('https://localhost:8505/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -68,9 +72,13 @@ function Login() {
                     <p className="register-link" onClick={handleRegisterClick}>
                         No tengo cuenta
                     </p>
+                    <button onClick={handleGoogleLogin} className="button-google">
+                        Iniciar sesión con Google
+                    </button>
                 </div>
             </div>
         </div>
+
     );
 }
 

@@ -34,7 +34,9 @@ type ShareRequest struct {
 	UserID int    `json:"userID"`
 }
 
-var jwtSecret = os.Getenv("JWT_SECRET_KEY")
+var (
+	jwtSecret = os.Getenv("JWT_SECRET_KEY")
+)
 
 // Login maneja la autenticación y genera un token JWT
 func Login(w http.ResponseWriter, r *http.Request) {

@@ -5,6 +5,7 @@ import DataWindow from './components/DataWindow';
 import ProtectedRoute from './components/ProtectedRoute';
 import Register from './components/Register';
 import FileDetail from "./components/FileDetail";
+import LoginSuccess from "./components/LoginSucess";
 
 function App() {
     return (
@@ -13,6 +14,7 @@ function App() {
                 <Routes>
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
+                    <Route path="/login-success" element={<LoginSuccess />} />
                     <Route
                         path="/data"
                         element={<ProtectedRoute element={<DataWindow />} />}

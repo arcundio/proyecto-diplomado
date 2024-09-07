@@ -18,7 +18,7 @@ function FileDetail() {
             if (hash) {
                 try {
                     // Fetch file details
-                    const fileResponse = await fetch(`http://localhost:8505/files/${hash}`);
+                    const fileResponse = await fetch(`https://localhost:8505/files/${hash}`);
                     const fileData = await fileResponse.json();
                     setFileDetails(fileData);
                     setIsSigned(fileData.isSigned);
@@ -26,7 +26,7 @@ function FileDetail() {
                     // Fetch owner details
                     const token = localStorage.getItem('jwt');
                     const userID = localStorage.getItem('userID');
-                    const ownerResponse = await fetch(`http://localhost:8505/file/${hash}/owner`, {
+                    const ownerResponse = await fetch(`https://localhost:8505/file/${hash}/owner`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -35,7 +35,7 @@ function FileDetail() {
                     setIsFileOwner(ownerData.isOwner);
 
                     // Check if file is signed
-                    const signatureResponse = await fetch(`http://localhost:8505/verify-signature/${hash}`);
+                    const signatureResponse = await fetch(`https://localhost:8505/verify-signature/${hash}`);
                     const signatureData = await signatureResponse.json();
                     setIsSigned(signatureData.signed);
                 } catch (error) {
@@ -65,7 +65,7 @@ function FileDetail() {
             return;
         }
 
-        fetch(`http://localhost:8505/share-file/${hash}`, {
+        fetch(`https://localhost:8505/share-file/${hash}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -112,7 +112,7 @@ function FileDetail() {
         formData.append('fileID', hash);
         formData.append('userID', userID);
 
-        fetch('http://localhost:8505/sign', {
+        fetch('https://localhost:8505/sign', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -139,13 +139,13 @@ function FileDetail() {
         const jwtToken = localStorage.getItem('jwt');
         const userID = localStorage.getItem('userID');
 
-        fetch('http://localhost:8505/generateKeys', {
+        fetch('https://localhost:8505/generateKeys', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ UserID: userID, KeyName: 'private-key' }) // Adjust the key name if needed
+            body: JSON.stringify({ userId: parseInt(userID, 10), keyName: 'private-key' }) // Adjust the key name if needed
         })
             .then(response => {
                 if (response.ok) {
