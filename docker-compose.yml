@@ -12,6 +12,7 @@ services:
       - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql  
     ports:
       - 5432:5432
+
   backend:
     build:
       context: ./web
@@ -28,4 +29,14 @@ services:
       - DB_NAME=persistencia
       - JWT_SECRET_KEY=secretsecretsecretsecretsecretsecretsecretsecretsecretsecret
     restart: always
+
+  frontend:
+    build:
+      context: ./proyectodiplomadofrontend
+      dockerfile: Dockerfile
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
 

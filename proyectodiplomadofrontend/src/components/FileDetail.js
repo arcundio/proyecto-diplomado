@@ -35,7 +35,17 @@ function FileDetail() {
                     setIsFileOwner(ownerData.isOwner);
 
                     // Check if file is signed
-                    const signatureResponse = await fetch(`https://localhost:8505/verify-signature/${hash}`);
+                    const signatureResponse = await fetch(`https://localhost:8505/verify-signature`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                        body: JSON.stringify({
+                            userId: parseInt(userID, 10), // Convierte userID a número entero
+                            fileId: parseInt(hash, 10)    // Convierte fileId (hash) a número entero
+                        }),
+                    });
                     const signatureData = await signatureResponse.json();
                     setIsSigned(signatureData.signed);
                 } catch (error) {

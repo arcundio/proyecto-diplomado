@@ -42,7 +42,7 @@ func main() {
 	r.HandleFunc("/upload", controllers.UploadFileHandler).Methods("POST")
 	r.HandleFunc("/sign", controllers.SignFileHandler).Methods("POST")
 	r.HandleFunc("/generateKeys", controllers.GenerateKeyPairHandler).Methods("POST")
-	r.HandleFunc("/verify-signature/{fileID:[0-9]+}", controllers.VerifyFileSignatureHandler).Methods("GET")
+	r.HandleFunc("/verify-signature", controllers.VerifySignature).Methods("POST")
 
 	// Rutas públicas de acceso a archivos y usuarios
 	r.HandleFunc("/files/{id}", controllers.GetFilesByUserID).Methods("GET")
@@ -111,6 +111,7 @@ func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // Controlador para manejar la redirección/callback de Google
 func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
+
 	// Verificar si el estado es válido
 	if r.FormValue("state") != stateToken {
 		http.Error(w, "Estado inválido", http.StatusBadRequest)

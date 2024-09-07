@@ -13,7 +13,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/gorilla/mux"
 	"golang.org/x/crypto/bcrypt"
-	"gorm.io/gorm"
 	"io"
 	"net/http"
 	"os"
@@ -276,7 +275,7 @@ func SignFileHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Archivo firmado exitosamente"))
 }
-
+/**
 func VerifyFileSignatureHandler(w http.ResponseWriter, r *http.Request) {
 	// Obtener el ID del archivo desde los parámetros de la solicitud
 	vars := mux.Vars(r)
@@ -306,7 +305,7 @@ func VerifyFileSignatureHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]bool{"signed": true})
-}
+} **/
 
 // GenerateKeyPairHandler maneja la generación de llaves RSA, almacenamiento de la llave pública y descarga de la llave privada
 func GenerateKeyPairHandler(w http.ResponseWriter, r *http.Request) {
@@ -432,7 +431,7 @@ func VerifySignature(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("Signature is valid"))
+	json.NewEncoder(w).Encode(map[string]bool{"signed": true})
 
 }
 
