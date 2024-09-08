@@ -51,7 +51,12 @@ services:
       - DB_NAME=persistencia
       - JWT_SECRET_KEY=secretsecretsecretsecretsecretsecretsecretsecretsecretsecret
     labels:
-      - "traefik.enable=false"
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`www.nomcci.top`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=web-secure"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.services.backend.loadbalancer.server.port=8505"
     depends_on:
       - persistencia
     networks:

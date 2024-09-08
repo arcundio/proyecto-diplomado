@@ -36,27 +36,28 @@ func main() {
 	r := mux.NewRouter()
 
 	// Rutas públicas
-	r.HandleFunc("/login", controllers.Login).Methods("POST")
-	r.HandleFunc("/register", controllers.CreateUser).Methods("POST")
-	r.HandleFunc("/upload", controllers.UploadFileHandler).Methods("POST")
-	r.HandleFunc("/sign", controllers.SignFileHandler).Methods("POST")
-	r.HandleFunc("/generateKeys", controllers.GenerateKeyPairHandler).Methods("POST")
-	r.HandleFunc("/verify-signature", controllers.VerifySignature).Methods("POST")
+	r.HandleFunc("/api/login", controllers.Login).Methods("POST")
+	r.HandleFunc("/api/register", controllers.CreateUser).Methods("POST")
+	r.HandleFunc("/api/upload", controllers.UploadFileHandler).Methods("POST")
+	r.HandleFunc("/api/sign", controllers.SignFileHandler).Methods("POST")
+	r.HandleFunc("/api/generateKeys", controllers.GenerateKeyPairHandler).Methods("POST")
+	r.HandleFunc("/api/verify-signature", controllers.VerifySignature).Methods("POST")
 
 	// Rutas públicas de acceso a archivos y usuarios
-	r.HandleFunc("/files/{id}", controllers.GetFilesByUserID).Methods("GET")
-	r.HandleFunc("/users", controllers.GetUsers).Methods("GET")
-	r.HandleFunc("/users/{id}", controllers.GetUser).Methods("GET")
-	r.HandleFunc("/share-file/{fileID:[0-9]+}", controllers.ShareFileHandler).Methods("POST")
-	r.HandleFunc("/shared-users", controllers.GetSharedFilesUsers).Methods("GET")
-	r.HandleFunc("/shared-files/{id}", controllers.GetSharedFilesHandler).Methods("GET")
-	r.HandleFunc("/file/{id}/owner", controllers.CheckFileOwner).Methods("GET")
+	r.HandleFunc("/api/files/{id}", controllers.GetFilesByUserID).Methods("GET")
+	r.HandleFunc("/api/users", controllers.GetUsers).Methods("GET")
+	r.HandleFunc("/api/users/{id}", controllers.GetUser).Methods("GET")
+	r.HandleFunc("/api/share-file/{fileID:[0-9]+}", controllers.ShareFileHandler).Methods("POST")
+	r.HandleFunc("/api/shared-users", controllers.GetSharedFilesUsers).Methods("GET")
+	r.HandleFunc("/api/shared-files/{id}", controllers.GetSharedFilesHandler).Methods("GET")
+	r.HandleFunc("/api/file/{id}/owner", controllers.CheckFileOwner).Methods("GET")
 
 	// Ruta para iniciar el proceso de login con Google OAuth2
-	r.HandleFunc("/auth/google", googleLoginHandler).Methods("GET")
+	r.HandleFunc("/api/auth/google", googleLoginHandler).Methods("GET")
 
 	// Ruta para manejar el callback/redirección de Google
-	r.HandleFunc("/auth/google/callback", googleCallbackHandler).Methods("GET")
+	r.HandleFunc("/api/auth/google/callback", googleCallbackHandler).Methods("GET")
+
 
 	// Rutas protegidas
 	protected := r.PathPrefix("/").Subrouter()

@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"web/models"
+	"time"
 )
 
 var DB *gorm.DB
@@ -24,10 +25,20 @@ func InitDB() {
 	// Crear la cadena de conexión
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable", host, user, password, dbname, port)
 
-	// Conéctate a la base de datos PostgreSQL
-	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	for retries := 0; retries < 10; retries++ {
+		DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+		if err == nil {
+			// Conexión exitosa, sal del bucle
+			break
+		}
+
+		// Imprimir mensaje de error y esperar antes de reintentar
+		log.Printf("Failed to connect to database, retrying in 5 seconds... (attempt %d)", retries+1)
+		time.Sleep(5 * time.Second)
+	}
+
 	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
+		log.Fatalf("Failed to connect to database after multiple attempts: %v", err)
 	}
 
 	// Migrar el modelo de usuario
