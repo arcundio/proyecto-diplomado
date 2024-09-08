@@ -7,26 +7,23 @@ services:
     command:
       - "--api.insecure=false"
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.web-secure.address=:443"  # Añadimos HTTPS
-      - "--entrypoints.web-secure.http.tls=true"  # Activa TLS en el puerto 443
+      - "--entrypoints.web-secure.address=:443"
+      - "--entrypoints.web-secure.http.tls=true"
       - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"  # No expone servicios por defecto
-      - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"  # Redirige HTTP a HTTPS
-      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"  # Asegura redirección a HTTPS
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.http.redirections.entryPoint.to=web-secure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"  # Usar challenge TLS
+      - "--certificatesresolvers.myresolver.acme.email=hospondres23@gmail.com"  # Email para Let's Encrypt
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"  # Archivo para almacenar certificados
     ports:
-      - "80:80"  # Puerto HTTP (redirigido a HTTPS)
-      - "443:443"  # Puerto HTTPS
+      - "80:80"
+      - "443:443"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # Permite a Traefik interactuar con Docker
-      - ./certs:/certs  # Montamos la carpeta con los certificados
-    depends_on:
-      - backend
-      - frontend
-    labels:
-      - "traefik.http.routers.api.rule=Host(`localhost`)"  # Reemplaza con tu dominio
-      - "traefik.http.routers.api.entrypoints=web-secure"  # Solo HTTPS
-      - "traefik.http.routers.api.tls=true"  # Activa TLS para este router
-      - "traefik.http.routers.api.tls.certresolver=selfsigned"  # Usar certificado autofirmado
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt  # Carpeta para almacenar certificados
+    networks:
+      - internal
 
   persistencia:
     image: postgres
@@ -36,9 +33,11 @@ services:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=user123
     volumes:
-      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql  
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
     labels:
-      - "traefik.enable=false"  # No exponer el servicio externamente
+      - "traefik.enable=false"
+    networks:
+      - internal
 
   backend:
     build:
@@ -52,9 +51,12 @@ services:
       - DB_NAME=persistencia
       - JWT_SECRET_KEY=secretsecretsecretsecretsecretsecretsecretsecretsecretsecret
     labels:
-      - "traefik.enable=false"  # No exponer el backend
+      - "traefik.enable=false"
     depends_on:
       - persistencia
+    networks:
+      - internal
+    restart: always
 
   frontend:
     build:
@@ -62,11 +64,17 @@ services:
       dockerfile: Dockerfile
     container_name: frontend
     labels:
-      - "traefik.enable=true"  # Exponer el servicio frontend
-      - "traefik.http.routers.frontend.rule=Host(`localhost`)"  # Reemplaza con tu dominio
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"  # Puerto interno del frontend
-      - "traefik.http.routers.frontend.entrypoints=web-secure"  # El frontend solo estará disponible en HTTPS
-      - "traefik.http.routers.frontend.tls=true"  # Activar TLS
-      - "traefik.http.routers.frontend.tls.certresolver=selfsigned"  # Usar certificado autofirmado
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`www.nomcci.top`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.frontend.entrypoints=web-secure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"  # Usa el resolutor de Let's Encrypt
     depends_on:
       - backend
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge

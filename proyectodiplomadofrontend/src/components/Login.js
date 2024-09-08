@@ -11,14 +11,15 @@ function Login() {
         navigate('/register');
     };
 
+    // Actualiza el esquema para el backend
     const handleGoogleLogin = () => {
-        window.location.href = 'https://backend:8505/auth/google';
+        window.location.href = '/auth/google'; // Redirige al backend a través de Traefik
     };
 
     const handleSubmit = async (event) => {
         event.preventDefault();
         try {
-            const response = await fetch('https://backend:8505/login', {
+            const response = await fetch('/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -27,7 +28,7 @@ function Login() {
             });
 
             if (response.ok) {
-                const { token, userID } = await response.json(); // Asegúrate de que el backend:8505 devuelva userID
+                const { token, userID } = await response.json(); // Asegúrate de que el backend devuelva userID
                 localStorage.setItem('jwt', token);
                 localStorage.setItem('userID', userID); // Guardar el userID
                 navigate('/data');
@@ -78,7 +79,6 @@ function Login() {
                 </div>
             </div>
         </div>
-
     );
 }
 

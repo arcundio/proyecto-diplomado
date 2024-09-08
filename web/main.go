@@ -1,30 +1,29 @@
 package main
 
 import (
+	"context"
+	"crypto/rand"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
+	"golang.org/x/crypto/bcrypt"
 	"log"
 	"net/http"
 	"web/config"
 	"web/controllers"
 	"web/middleware"
-	"web/utils"
 	"web/models"
-	"context"
-    "golang.org/x/oauth2"
-    "golang.org/x/oauth2/google"
-	"encoding/json"
-	"golang.org/x/crypto/bcrypt"
-	"crypto/rand"
-    "encoding/base64"
+	"web/utils"
 )
 
 var (
 	oauth2Config *oauth2.Config
-	stateToken = "random_state_string" 
+	stateToken   = "random_state_string" // Debes usar un valor aleatorio y seguro en producción
 )
-
 
 func main() {
 	// Inicia la base de datos
@@ -53,10 +52,10 @@ func main() {
 	r.HandleFunc("/shared-files/{id}", controllers.GetSharedFilesHandler).Methods("GET")
 	r.HandleFunc("/file/{id}/owner", controllers.CheckFileOwner).Methods("GET")
 
-		// Ruta para iniciar el proceso de login con Google OAuth2
+	// Ruta para iniciar el proceso de login con Google OAuth2
 	r.HandleFunc("/auth/google", googleLoginHandler).Methods("GET")
 
-		// Ruta para manejar el callback/redirección de Google
+	// Ruta para manejar el callback/redirección de Google
 	r.HandleFunc("/auth/google/callback", googleCallbackHandler).Methods("GET")
 
 	// Rutas protegidas
@@ -74,32 +73,18 @@ func main() {
 		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),           // Permitir estos encabezados
 	)(r)
 
-	tokenString, err := utils.GenerateToken("test@example.com", 123)
-	if err != nil {
-		log.Fatalf("Error generating token: %v", err)
-	}
-
-	fmt.Println("Generated Token:", tokenString)
-
-	userID, err := utils.ExtractUserIDFromJWT(tokenString)
-	if err != nil {
-		log.Fatalf("Error extracting user ID: %v", err)
-	}
-
-	fmt.Println("Extracted UserID:", userID)
-
-	// Inicia el servidor HTTPS
-	log.Fatal(http.ListenAndServeTLS(":8505", "server.crt", "server.key", corsHandler))
+	// Inicia el servidor (Traefik manejará HTTPS)
+	log.Fatal(http.ListenAndServe(":8505", corsHandler))
 }
 
 // Inicializa la configuración OAuth2 con los parámetros de Google
 func initOAuthConfig() {
 	oauth2Config = &oauth2.Config{
-		ClientID:     "1037996082378-lnaa024kcgajn3d3p866oqbd49om8b82.apps.googleusercontent.com",         // Reemplazar con tu ClientID
-		ClientSecret: "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",     // Reemplazar con tu ClientSecret
-		RedirectURL:  "https://localhost:8505/auth/google/callback", // URL configurada en Google Cloud
+		ClientID:     "1037996082378-lnaa024kcgajn3d3p866oqbd49om8b82.apps.googleusercontent.com", // Reemplazar con tu ClientID
+		ClientSecret: "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", // Reemplazar con tu ClientSecret
+		RedirectURL:  "https://nomcci.top/auth/google/callback", // URL configurada en Google Cloud
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"}, // Scopes de Google
-		Endpoint:     google.Endpoint,        // Usar el endpoint de Google
+		Endpoint:     google.Endpoint, // Usar el endpoint de Google
 	}
 }
 
@@ -111,7 +96,6 @@ func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 
 // Controlador para manejar la redirección/callback de Google
 func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
-
 	// Verificar si el estado es válido
 	if r.FormValue("state") != stateToken {
 		http.Error(w, "Estado inválido", http.StatusBadRequest)
@@ -153,7 +137,7 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		redirectURL := fmt.Sprintf("http://localhost:3000/login-success?token=%s&userID=%d", token, existingUser.UserID)
+		redirectURL := fmt.Sprintf("https://nomcci.top/login-success?token=%s&userID=%d", token, existingUser.UserID)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 
 	} else {
@@ -186,7 +170,7 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		redirectURL := fmt.Sprintf("http://localhost:3000/login-success?token=%s&userID=%d", token, user.UserID)
+		redirectURL := fmt.Sprintf("https://nomcci.top/login-success?token=%s&userID=%d", token, user.UserID)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 	}
 }
@@ -214,13 +198,13 @@ func getUserEmail(client *http.Client) (string, error) {
 
 // Genera una cadena aleatoria de longitud especificada
 func generateRandomString(length int) (string, error) {
-    // Genera una secuencia de bytes aleatorios
-    randomBytes := make([]byte, length)
-    _, err := rand.Read(randomBytes)
-    if err != nil {
-        return "", err
-    }
+	// Genera una secuencia de bytes aleatorios
+	randomBytes := make([]byte, length)
+	_, err := rand.Read(randomBytes)
+	if err != nil {
+		return "", err
+	}
 
-    // Codifica los bytes aleatorios en una cadena segura usando base64
-    return base64.URLEncoding.EncodeToString(randomBytes)[:length], nil
+	// Codifica los bytes aleatorios en una cadena segura usando base64
+	return base64.URLEncoding.EncodeToString(randomBytes)[:length], nil
 }
