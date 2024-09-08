@@ -19,7 +19,7 @@ function DataWindow() {
         setCurrentUserID(parseInt(userID, 10));  // Asegurarse de que sea un número
 
         // Obtener los usuarios que han compartido archivos con el usuario que ha iniciado sesión
-        fetch('https://backend:8505/shared-users', {
+        fetch('/shared-users', {
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('jwt')}`
             }
@@ -44,7 +44,7 @@ function DataWindow() {
         if (selectedUser !== null && currentUserID !== null) {
             if (selectedUser !== currentUserID) {
                 // Obtener los archivos del usuario seleccionado si es distinto del usuario actual
-                fetch(`https://backend:8505/shared-files/${selectedUser}`, {
+                fetch(`/shared-files/${selectedUser}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('jwt')}`
                     }
@@ -57,7 +57,7 @@ function DataWindow() {
                     .catch(error => console.error('Error fetching shared files:', error));
             } else {
                 // Obtener todos los archivos del usuario actual
-                fetch(`https://backend:8505/files/${currentUserID}`, {
+                fetch(`/files/${currentUserID}`, {
                     headers: {
                         'Authorization': `Bearer ${localStorage.getItem('jwt')}`
                     }
@@ -84,7 +84,7 @@ function DataWindow() {
             formData.append('file', file);
             formData.append('userID', currentUserID); // Usar el ID del usuario actual
 
-            fetch(`https://backend:8505/upload`, {
+            fetch(`/upload`, {
                 method: 'POST',
                 body: formData,
                 headers: {
@@ -93,7 +93,7 @@ function DataWindow() {
             })
                 .then(response => {
                     if (response.ok) {
-                        return fetch(`https://backend:8505/files/${currentUserID}`, {
+                        return fetch(`/files/${currentUserID}`, {
                             headers: {
                                 'Authorization': `Bearer ${localStorage.getItem('jwt')}`
                             }

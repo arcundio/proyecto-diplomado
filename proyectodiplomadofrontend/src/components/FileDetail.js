@@ -18,7 +18,7 @@ function FileDetail() {
             if (hash) {
                 try {
                     // Fetch file details
-                    const fileResponse = await fetch(`https://backend:8505/files/${hash}`);
+                    const fileResponse = await fetch(`/files/${hash}`);
                     const fileData = await fileResponse.json();
                     setFileDetails(fileData);
                     setIsSigned(fileData.isSigned);
@@ -26,7 +26,7 @@ function FileDetail() {
                     // Fetch owner details
                     const token = localStorage.getItem('jwt');
                     const userID = localStorage.getItem('userID');
-                    const ownerResponse = await fetch(`https://backend:8505/file/${hash}/owner`, {
+                    const ownerResponse = await fetch(`/file/${hash}/owner`, {
                         headers: {
                             'Authorization': `Bearer ${token}`
                         }
@@ -35,7 +35,7 @@ function FileDetail() {
                     setIsFileOwner(ownerData.isOwner);
 
                     // Check if file is signed
-                    const signatureResponse = await fetch(`https://backend:8505/verify-signature`, {
+                    const signatureResponse = await fetch(`/verify-signature`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -75,7 +75,7 @@ function FileDetail() {
             return;
         }
 
-        fetch(`https://backend:8505/share-file/${hash}`, {
+        fetch(`/share-file/${hash}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -122,7 +122,7 @@ function FileDetail() {
         formData.append('fileID', hash);
         formData.append('userID', userID);
 
-        fetch('https://backend:8505/sign', {
+        fetch('/sign', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,
@@ -149,7 +149,7 @@ function FileDetail() {
         const jwtToken = localStorage.getItem('jwt');
         const userID = localStorage.getItem('userID');
 
-        fetch('https://backend:8505/generateKeys', {
+        fetch('/generateKeys', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${jwtToken}`,
