@@ -83,7 +83,7 @@ func initOAuthConfig() {
 	oauth2Config = &oauth2.Config{
 		ClientID:     "1037996082378-lnaa024kcgajn3d3p866oqbd49om8b82.apps.googleusercontent.com", // Reemplazar con tu ClientID
 		ClientSecret: "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", // Reemplazar con tu ClientSecret
-		RedirectURL:  "https://nomcci.top/auth/google/callback", // URL configurada en Google Cloud
+		RedirectURL:  "https://www.nomcci.top/api/auth/google/callback", // URL configurada en Google Cloud
 		Scopes:       []string{"https://www.googleapis.com/auth/userinfo.email"}, // Scopes de Google
 		Endpoint:     google.Endpoint, // Usar el endpoint de Google
 	}
@@ -138,7 +138,7 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		redirectURL := fmt.Sprintf("https://nomcci.top/login-success?token=%s&userID=%d", token, existingUser.UserID)
+		redirectURL := fmt.Sprintf("https://www.nomcci.top/login-success?token=%s&userID=%d", token, existingUser.UserID)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 
 	} else {

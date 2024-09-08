@@ -13,7 +13,7 @@ function Login() {
 
     // Actualiza el esquema para el backend
     const handleGoogleLogin = () => {
-        window.location.href = '/auth/google'; // Redirige al backend a través de Traefik
+        window.location.href = 'api/auth/google'; // Redirige al backend a través de Traefik
     };
 
     const handleSubmit = async (event) => {
