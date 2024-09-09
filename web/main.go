@@ -138,7 +138,7 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		redirectURL := fmt.Sprintf("https://nomcci.top/login-success?token=%s&userID=%d", token, existingUser.UserID)
+		redirectURL := fmt.Sprintf("https://www.nomcci.top/login-success?token=%s&userID=%d", token, existingUser.UserID)
 		http.Redirect(w, r, redirectURL, http.StatusSeeOther)
 
 	} else {
